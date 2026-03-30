@@ -16,6 +16,10 @@ class Tank implements GamePiece {
     this.col = col;
   }
 
+  getPosition(): {row: number; col: number} {
+    return { row: this.row, col: this.col };
+  }
+
   public move(row: number, col: number, feature: Feature): string {
     if (this.row === row && this.col === col) {
       return this.name;
@@ -26,6 +30,14 @@ class Tank implements GamePiece {
 
   attack(): number {
     return this.power;
+  }
+
+  getPower(): number {
+    return this.power;
+  }
+
+  getSpeed(): number {
+    return this.speed;
   }
 }
 
