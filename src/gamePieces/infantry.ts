@@ -1,7 +1,7 @@
 import type { Feature } from "../features";
 import type { GamePiece } from "../gamePieces/GamePiece";
 
-class Tank implements GamePiece {
+class Infantry implements GamePiece {
   name: string;
   power: number;
   speed: number;
@@ -9,9 +9,9 @@ class Tank implements GamePiece {
   col: number;
 
   constructor(name: string, row: number, col: number) {
-    this.name = "Tank-" + name;
-    this.power = 2;
-    this.speed = 2;
+    this.name = "Infantry-" + name;
+    this.power = 1;
+    this.speed = 1;
     this.row = row;
     this.col = col;
   }
@@ -52,4 +52,4 @@ class Tank implements GamePiece {
   }
 }
 
-export default Tank;
+export default Infantry;
