@@ -17,7 +17,7 @@ const Game = () => {
     new Infantry("A-infantry-4", 0, 5),
     new Tank("A-tank-3", 0, 6),
     new Tank("A-tank-4", 0, 7),
-    
+
     new Tank("B-tank-1", 7, 0),
     new Tank("B-tank-2", 7, 1),
     new Infantry("B-infantry-1", 7, 2),
@@ -43,11 +43,7 @@ const Game = () => {
     setNumClicks,
   );
 
-  return (
-    <div id="game">
-      <div id="board">{board}</div>
-    </div>
-  );
+  return <div id="board">{board}</div>;
 };
 
 const createTerrainArray = (rows: number, cols: number): string[] => {
@@ -141,8 +137,6 @@ const updateGameBoard = (
           pieceToMove,
           currentCellPiece,
           dieRoll,
-          setPieces,
-          pieces,
         );
 
         updatedPiecesArray.push(winningPiece);
@@ -244,8 +238,6 @@ const returnWinningPieceInAttack = (
   attackingPiece: GamePiece,
   defendingPiece: GamePiece | undefined,
   dieRoll: number,
-  setPieces: React.Dispatch<React.SetStateAction<GamePiece[]>>,
-  pieces: GamePiece[],
 ): GamePiece => {
   if (!defendingPiece) {
     return attackingPiece;
