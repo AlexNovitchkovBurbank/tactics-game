@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { type ReactNode } from "react";
 import "./game.css";
 import randomArrayIndexGenerator from "../randomizers/randomArrayIndexGenerator";
@@ -199,8 +199,6 @@ const checkIfMoveIsValid = (
   terrainOfCellToMoveFrom: string,
   terrainOfCellToMoveTo: string,
 ): string => {
-  let canGetToSquare = false;
-
   const pieceOnCurrentClickedSquare = pieces.find((gamePiece) => {
     const position = gamePiece.getPosition();
     return position.row === currentCell.row && position.col === currentCell.col;
