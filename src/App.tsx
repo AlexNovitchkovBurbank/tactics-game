@@ -1,4 +1,5 @@
 import "./App.css";
+import DieComponent from "./components/dieComponent";
 import Game from "./game/game";
 import ResolutionCard from "./resolutionCard/resolutionCard";
 
@@ -10,7 +11,10 @@ function App() {
       </section>
       <section id="body">
         <Game />
-        <ResolutionCard />
+        <div id="conflict-resolution-components">
+          <ResolutionCard />
+          <DieComponent />
+        </div>
       </section>
       <section id="footer"></section>
     </>

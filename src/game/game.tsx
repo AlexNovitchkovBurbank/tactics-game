@@ -6,6 +6,8 @@ import type { GamePiece } from "../gamePieces/GamePiece";
 import Tank from "../gamePieces/tank";
 import sixSidedDie from "../randomizers/die";
 import Infantry from "../gamePieces/infantry";
+import { useDispatch } from "react-redux";
+import { setDieRollResult } from "../redux/dieRollSlice";
 
 const Game = () => {
   const [pieces, setPieces] = useState<GamePiece[]>([
@@ -66,6 +68,7 @@ const updateGameBoard = (
   setNumClicks: React.Dispatch<React.SetStateAction<number>>,
 ): ReactNode[] => {
   const board: ReactNode[] = [];
+  const dieRollSelector = useDispatch();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const target = event.target as HTMLButtonElement;
@@ -132,6 +135,8 @@ const updateGameBoard = (
             (position.row === cellRow && position.col === cellCol)
           );
         });
+
+        dieRollSelector(setDieRollResult(dieRoll));
 
         const winningPiece = returnWinningPieceInAttack(
           pieceToMove,

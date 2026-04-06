@@ -4,3 +4,10 @@
   align-items: center;
   min-height: 100vh;
 }
+
+#conflict-resolution-components {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-top: 20px;
+}
