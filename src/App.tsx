@@ -5,7 +5,9 @@ import ResolutionCard from "./resolutionCard/resolutionCard";
 function App() {
   return (
     <>
-      <section id="header"></section>
+      <section id="header">
+        <h1 className="title">Tactics Game</h1>
+      </section>
       <section id="body">
         <Game />
         <ResolutionCard />
