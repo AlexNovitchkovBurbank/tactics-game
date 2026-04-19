@@ -102,8 +102,6 @@ const updateGameBoard = (
 
     if (numClicks === 1 && activePiece) {
       const activePiecePosition = activePiece.getPosition();
-      const terrainOfCellToMoveFrom =
-        terrainArray[activePiecePosition.row * 8 + activePiecePosition.col];
       const terrainOfCellToMoveTo =
         terrainArray[
           currentCellRow * 8 + currentCellCol
@@ -113,7 +111,6 @@ const updateGameBoard = (
         pieces,
         activePiece,
         { row: currentCellRow, col: currentCellCol },
-        terrainOfCellToMoveFrom,
         terrainOfCellToMoveTo,
       );
 
@@ -126,7 +123,7 @@ const updateGameBoard = (
           );
         });
 
-        activePiece.move(currentCellRow, currentCellCol, terrainOfCellToMoveFrom);
+        activePiece.move(currentCellRow, currentCellCol, terrainOfCellToMoveTo);
         updatedPiecesArray.push(activePiece);
 
         setPieces(updatedPiecesArray);
@@ -212,7 +209,6 @@ const checkIfMoveIsValid = (
   pieces: GamePiece[],
   activePiece: GamePiece | null,
   currentCell: { row: number; col: number },
-  terrainOfCellToMoveFrom: string,
   terrainOfCellToMoveTo: string,
 ): string => {
   const pieceOnCurrentClickedSquare = pieces.find((gamePiece) => {
@@ -250,13 +246,12 @@ const checkIfMoveIsValid = (
       return "piece on square";
     }
 
-    const canExit = canActivePieceExitItsSquare(
+    const canMove = canActivePieceMoveToSquare(
       activePiece,
-      terrainOfCellToMoveFrom,
       terrainOfCellToMoveTo,
     );
 
-    if (canExit) {
+    if (canMove) {
       return "valid move";
     }
   }
@@ -267,30 +262,28 @@ const checkIfMoveIsValid = (
 /**
  * Checks if the piece can move to a square based on terrain and movement left of the piece.
  * @param activePiece, the piece that is currently being moved
- * @param terrainOfCellToMoveFrom, feature of the square to move from
  * @param terrainOfCellToMoveTo, feature of the square to move to
  * @returns whether the piece can move to the square
  */
-const canActivePieceExitItsSquare = (
+const canActivePieceMoveToSquare = (
   activePiece: GamePiece,
-  terrainOfCellToMoveFrom: string,
   terrainOfCellToMoveTo: string,
 ): boolean => {
-  if (terrainOfCellToMoveFrom === features.Mountain) {
+  if (terrainOfCellToMoveTo === features.Mountain) {
     return false;
   }
 
   if (
     activePiece.getMovementLeft() < 2 &&
-    (terrainOfCellToMoveFrom === features.Water ||
-      terrainOfCellToMoveFrom === features.Forest)
+    (terrainOfCellToMoveTo === features.Water ||
+      terrainOfCellToMoveTo === features.Forest)
   ) {
     return false;
   }
 
   if (
     activePiece.getMovementLeft() < 1 / 3 &&
-    terrainOfCellToMoveFrom === features.City
+    terrainOfCellToMoveTo === features.City
   ) {
     return false;
   }
