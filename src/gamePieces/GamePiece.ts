@@ -1,10 +1,8 @@
-import type { Feature } from "../features";
-
 export interface GamePiece {
   getPosition(): { row: number; col: number };
-  canMoveToSquare(occupied: boolean, currentSquareFeature: Feature): boolean;
-  move(row: number, col: number, featureType: String): void;
+  move(row: number, col: number, featureType: string): void;
   attack(): number;
   getPower(): number;
-  getSpeed(): number;
+  getNumMovement(): number;
+  getMovementLeft(): number;
 }
