@@ -1,5 +1,5 @@
 import "./App.css";
-import DieComponent from "./components/dieComponent";
+import DieComponent from "./components/DieComponent";
 import Game from "./game/game";
 import ResolutionCard from "./resolutionCard/resolutionCard";
 
