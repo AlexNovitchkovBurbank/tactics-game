@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { type ReactNode } from "react";
 import "./game.css";
 import randomArrayIndexGenerator from "../randomizers/randomArrayIndexGenerator";
@@ -6,6 +6,9 @@ import type { GamePiece } from "../gamePieces/GamePiece";
 import Tank from "../gamePieces/tank";
 import sixSidedDie from "../randomizers/die";
 import Infantry from "../gamePieces/infantry";
+import { useDispatch } from "react-redux";
+import { setDieRollResult } from "../redux/dieRollSlice";
+import features from "../features";
 
 const Game = () => {
   const [pieces, setPieces] = useState<GamePiece[]>([
@@ -17,7 +20,7 @@ const Game = () => {
     new Infantry("A-infantry-4", 0, 5),
     new Tank("A-tank-3", 0, 6),
     new Tank("A-tank-4", 0, 7),
-    
+
     new Tank("B-tank-1", 7, 0),
     new Tank("B-tank-2", 7, 1),
     new Infantry("B-infantry-1", 7, 2),
@@ -27,9 +30,9 @@ const Game = () => {
     new Tank("B-tank-3", 7, 6),
     new Tank("B-tank-4", 7, 7),
   ]);
-  const [terrain, setTerrain] = useState<string[]>(createTerrainArray(8, 8));
+  const [terrain] = useState<string[]>(createTerrainArray(8, 8));
 
-  const [pieceToMove, setPieceToMove] = useState<GamePiece | null>(null);
+  const [activePiece, setActivePiece] = useState<GamePiece | null>(null);
 
   const [numClicks, setNumClicks] = useState<number>(0);
 
@@ -37,22 +40,23 @@ const Game = () => {
     terrain,
     pieces,
     setPieces,
-    pieceToMove,
-    setPieceToMove,
+    activePiece,
+    setActivePiece,
     numClicks,
     setNumClicks,
   );
 
-  return (
-    <div id="game">
-      <div id="board">{board}</div>
-    </div>
-  );
+  return <div id="board">{board}</div>;
 };
 
 const createTerrainArray = (rows: number, cols: number): string[] => {
   const terrain: string[] = [];
-  const colors = ["#e9ecef", "#6a994e", "#90e0ef", "#adb5bd"]; // [City, Forest, Water, Mountain]
+  const colors = [
+    features.City,
+    features.Forest,
+    features.Water,
+    features.Mountain,
+  ];
   for (let i = 0; i < rows * cols; i++) {
     terrain.push(colors[randomArrayIndexGenerator(colors.length)]);
   }
@@ -64,12 +68,13 @@ const updateGameBoard = (
   terrainArray: string[],
   pieces: GamePiece[],
   setPieces: React.Dispatch<React.SetStateAction<GamePiece[]>>,
-  pieceToMove: GamePiece | null,
-  setPieceToMove: React.Dispatch<React.SetStateAction<GamePiece | null>>,
+  activePiece: GamePiece | null,
+  setActivePiece: React.Dispatch<React.SetStateAction<GamePiece | null>>,
   numClicks: number,
   setNumClicks: React.Dispatch<React.SetStateAction<number>>,
 ): ReactNode[] => {
   const board: ReactNode[] = [];
+  const dieRollSelector = useDispatch();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const target = event.target as HTMLButtonElement;
@@ -78,51 +83,48 @@ const updateGameBoard = (
     if (!target.id.startsWith("cell-")) return;
     if (target.id.split("-").length !== 3) return;
 
-    const cellRow = parseInt(target.id.split("-")[1]);
-    const cellCol = parseInt(target.id.split("-")[2]);
+    const currentCellRow = parseInt(target.id.split("-")[1]);
+    const currentCellCol = parseInt(target.id.split("-")[2]);
 
     // Return a piece on the current clicked cell or null
     const currentCellPiece = pieces.find((gamePiece) => {
       const position = gamePiece.getPosition();
-      return position.row === cellRow && position.col === cellCol;
+      return position.row === currentCellRow && position.col === currentCellCol;
     });
 
     if (numClicks === 0) {
       setNumClicks(currentCellPiece ? 1 : 0);
-      setPieceToMove(currentCellPiece ? currentCellPiece : null);
+      setActivePiece(currentCellPiece ? currentCellPiece : null);
     } else if (numClicks === 1) {
       setNumClicks(0);
-      setPieceToMove(null); // No piece for next round of clicks
+      setActivePiece(null); // No piece for next round of clicks
     }
 
-    if (numClicks === 1 && pieceToMove) {
-      const currentCellCoordinates = { row: cellRow, col: cellCol };
-      const pieceToMovePosition = pieceToMove.getPosition();
-      const terrainOfCellToMoveFrom =
-        terrainArray[pieceToMovePosition.row * 8 + pieceToMovePosition.col];
+    if (numClicks === 1 && activePiece) {
+      const activePiecePosition = activePiece.getPosition();
       const terrainOfCellToMoveTo =
         terrainArray[
-          currentCellCoordinates.row * 8 + currentCellCoordinates.col
+          currentCellRow * 8 + currentCellCol
         ];
 
       const canMoveResultString = checkIfMoveIsValid(
         pieces,
-        pieceToMovePosition,
-        currentCellCoordinates,
-        terrainOfCellToMoveFrom,
+        activePiece,
+        { row: currentCellRow, col: currentCellCol },
         terrainOfCellToMoveTo,
       );
+
       if (canMoveResultString === "valid move") {
         const updatedPiecesArray = pieces.filter((gamePiece) => {
           const position = gamePiece.getPosition();
           return !(
-            position.row === pieceToMovePosition.row &&
-            position.col === pieceToMovePosition.col
+            position.row === activePiecePosition.row &&
+            position.col === activePiecePosition.col
           );
         });
 
-        pieceToMove.move(cellRow, cellCol, terrainArray[cellRow * 8 + cellCol]);
-        updatedPiecesArray.push(pieceToMove);
+        activePiece.move(currentCellRow, currentCellCol, terrainOfCellToMoveTo);
+        updatedPiecesArray.push(activePiece);
 
         setPieces(updatedPiecesArray);
       } else if (canMoveResultString === "piece on square") {
@@ -131,18 +133,18 @@ const updateGameBoard = (
         const updatedPiecesArray = pieces.filter((gamePiece) => {
           const position = gamePiece.getPosition();
           return !(
-            (position.row === pieceToMovePosition.row &&
-              position.col === pieceToMovePosition.col) ||
-            (position.row === cellRow && position.col === cellCol)
+            (position.row === activePiecePosition.row &&
+              position.col === activePiecePosition.col) ||
+            (position.row === currentCellRow && position.col === currentCellCol)
           );
         });
 
+        dieRollSelector(setDieRollResult(dieRoll));
+
         const winningPiece = returnWinningPieceInAttack(
-          pieceToMove,
+          activePiece,
           currentCellPiece,
           dieRoll,
-          setPieces,
-          pieces,
         );
 
         updatedPiecesArray.push(winningPiece);
@@ -159,17 +161,22 @@ const updateGameBoard = (
         return position.row === row && position.col === col;
       });
 
-      const piecePosition = piece ? piece.getPosition() : null;
-      const cellText = piece ? piece.getPower() + " " + piece.getSpeed() : "";
+      const cellText = piece
+        ? piece.getPower() +
+          " " +
+          piece.getNumMovement() +
+          " " +
+          piece.getMovementLeft()
+        : "";
 
       let cellColor: string = terrainArray[row * 8 + col];
 
-      if (pieceToMove) {
-        const currentClickedPiece = pieceToMove.getPosition();
+      if (activePiece) {
+        const activePiecePosition = activePiece.getPosition();
 
         if (
-          currentClickedPiece.row === row &&
-          currentClickedPiece.col === col &&
+          activePiecePosition.row === row &&
+          activePiecePosition.col === col &&
           numClicks === 1
         ) {
           cellColor = "#ffaa00";
@@ -200,52 +207,94 @@ const updateGameBoard = (
 
 const checkIfMoveIsValid = (
   pieces: GamePiece[],
-  piecePosition: { row: number; col: number },
+  activePiece: GamePiece | null,
   currentCell: { row: number; col: number },
-  terrainOfCellToMoveFrom: string,
   terrainOfCellToMoveTo: string,
 ): string => {
-  let canGetToSquare = false;
-
   const pieceOnCurrentClickedSquare = pieces.find((gamePiece) => {
     const position = gamePiece.getPosition();
     return position.row === currentCell.row && position.col === currentCell.col;
   });
 
+  if (activePiece?.getMovementLeft() === 0) {
+    return "invalid move";
+  }
+
+  const activePiecePosition = activePiece ? activePiece.getPosition() : null;
+
   if (
-    (currentCell.row === piecePosition.row - 1 &&
-      currentCell.col === piecePosition.col - 1) ||
-    (currentCell.row === piecePosition.row - 1 &&
-      currentCell.col === piecePosition.col) ||
-    (currentCell.row === piecePosition.row - 1 &&
-      currentCell.col === piecePosition.col + 1) ||
-    (currentCell.row === piecePosition.row &&
-      currentCell.col === piecePosition.col - 1) ||
-    (currentCell.row === piecePosition.row &&
-      currentCell.col === piecePosition.col + 1) ||
-    (currentCell.row === piecePosition.row + 1 &&
-      currentCell.col === piecePosition.col - 1) ||
-    (currentCell.row === piecePosition.row + 1 &&
-      currentCell.col === piecePosition.col) ||
-    (currentCell.row === piecePosition.row + 1 &&
-      currentCell.col === piecePosition.col + 1)
+    activePiece &&
+    activePiecePosition &&
+    ((currentCell.row === activePiecePosition.row - 1 &&
+      currentCell.col === activePiecePosition.col - 1) ||
+      (currentCell.row === activePiecePosition.row - 1 &&
+        currentCell.col === activePiecePosition.col) ||
+      (currentCell.row === activePiecePosition.row - 1 &&
+        currentCell.col === activePiecePosition.col + 1) ||
+      (currentCell.row === activePiecePosition.row &&
+        currentCell.col === activePiecePosition.col - 1) ||
+      (currentCell.row === activePiecePosition.row &&
+        currentCell.col === activePiecePosition.col + 1) ||
+      (currentCell.row === activePiecePosition.row + 1 &&
+        currentCell.col === activePiecePosition.col - 1) ||
+      (currentCell.row === activePiecePosition.row + 1 &&
+        currentCell.col === activePiecePosition.col) ||
+      (currentCell.row === activePiecePosition.row + 1 &&
+        currentCell.col === activePiecePosition.col + 1))
   ) {
     if (pieceOnCurrentClickedSquare) {
       return "piece on square";
     }
 
-    return "valid move";
+    const canMove = canActivePieceMoveToSquare(
+      activePiece,
+      terrainOfCellToMoveTo,
+    );
+
+    if (canMove) {
+      return "valid move";
+    }
   }
 
   return "invalid move";
+};
+
+/**
+ * Checks if the piece can move to a square based on terrain and movement left of the piece.
+ * @param activePiece, the piece that is currently being moved
+ * @param terrainOfCellToMoveTo, feature of the square to move to
+ * @returns whether the piece can move to the square
+ */
+const canActivePieceMoveToSquare = (
+  activePiece: GamePiece,
+  terrainOfCellToMoveTo: string,
+): boolean => {
+  if (terrainOfCellToMoveTo === features.Mountain) {
+    return false;
+  }
+
+  if (
+    activePiece.getMovementLeft() < 2 &&
+    (terrainOfCellToMoveTo === features.Water ||
+      terrainOfCellToMoveTo === features.Forest)
+  ) {
+    return false;
+  }
+
+  if (
+    activePiece.getMovementLeft() < 1 / 3 &&
+    terrainOfCellToMoveTo === features.City
+  ) {
+    return false;
+  }
+
+  return true;
 };
 
 const returnWinningPieceInAttack = (
   attackingPiece: GamePiece,
   defendingPiece: GamePiece | undefined,
   dieRoll: number,
-  setPieces: React.Dispatch<React.SetStateAction<GamePiece[]>>,
-  pieces: GamePiece[],
 ): GamePiece => {
   if (!defendingPiece) {
     return attackingPiece;

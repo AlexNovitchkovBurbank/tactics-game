@@ -1,4 +1,4 @@
-type Feature = "River" | "Forest" | "Mountain" | "City";
+type Feature = "Water" | "Forest" | "Mountain" | "City";
 
 export type { Feature };
 

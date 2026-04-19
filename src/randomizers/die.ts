@@ -1,5 +1,6 @@
 const sixSidedDie = () => {
-  return Math.floor(Math.random() * 6) + 1;
+  const roll = Math.floor(Math.random() * 6) + 1;
+  return roll;
 }
 
 export default sixSidedDie;
