@@ -18,20 +18,20 @@ class Tank implements GamePiece {
     this.col = col;
   }
 
-  getPosition(): {row: number; col: number} {
+  getPosition(): { row: number; col: number } {
     return { row: this.row, col: this.col };
   }
 
   public move(row: number, col: number, feature: string): void {
     this.row = row;
     this.col = col;
-    
+
     if (feature === features.Water || feature === features.Forest) {
       this.movementLeft = this.movementLeft - 2;
     } else if (feature === features.City) {
-        this.movementLeft = this.movementLeft - (1 / 3);
+      this.movementLeft = this.movementLeft - 1 / 3;
     } else {
-        this.movementLeft = this.movementLeft - 1;
+      this.movementLeft = this.movementLeft - 1;
     }
   }
 
