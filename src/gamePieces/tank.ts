@@ -1,4 +1,3 @@
-import type { Feature } from "../features";
 import features from "../features";
 import type { GamePiece } from "../gamePieces/GamePiece";
 

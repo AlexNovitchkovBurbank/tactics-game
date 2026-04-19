@@ -30,7 +30,7 @@ const Game = () => {
     new Tank("B-tank-3", 7, 6),
     new Tank("B-tank-4", 7, 7),
   ]);
-  const [terrain, setTerrain] = useState<string[]>(createTerrainArray(8, 8));
+  const [terrain] = useState<string[]>(createTerrainArray(8, 8));
 
   const [activePiece, setActivePiece] = useState<GamePiece | null>(null);
 
@@ -164,7 +164,6 @@ const updateGameBoard = (
         return position.row === row && position.col === col;
       });
 
-      const currentPiecePosition = piece ? piece.getPosition() : null;
       const cellText = piece
         ? piece.getPower() +
           " " +
