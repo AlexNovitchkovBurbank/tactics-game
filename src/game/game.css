@@ -6,9 +6,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  opacity: 0.8;
 }
 
 #board {
