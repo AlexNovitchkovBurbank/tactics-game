@@ -9,13 +9,17 @@ class Tank implements GamePiece {
   row: number;
   col: number;
 
-  constructor(name: string, row: number, col: number) {
-    this.name = "Tank-" + name;
+  constructor(player: string, division: number, row: number, col: number) {
+    this.name = "T" + "-" + player + division;
     this.power = 2;
     this.numMovement = 2;
     this.movementLeft = 2;
     this.row = row;
     this.col = col;
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   getPosition(): { row: number; col: number } {
