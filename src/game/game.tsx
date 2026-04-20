@@ -12,23 +12,23 @@ import features from "../features";
 
 const Game = () => {
   const [pieces, setPieces] = useState<GamePiece[]>([
-    new Tank("A-tank-1", 0, 0),
-    new Tank("A-tank-2", 0, 1),
-    new Infantry("A-infantry-1", 0, 2),
-    new Infantry("A-infantry-2", 0, 3),
-    new Infantry("A-infantry-3", 0, 4),
-    new Infantry("A-infantry-4", 0, 5),
-    new Tank("A-tank-3", 0, 6),
-    new Tank("A-tank-4", 0, 7),
+    new Tank("A", 1, 0, 0),
+    new Tank("A", 2, 0, 1),
+    new Infantry("A", 1, 0, 2),
+    new Infantry("A", 2, 0, 3),
+    new Infantry("A", 3, 0, 4),
+    new Infantry("A", 4, 0, 5),
+    new Tank("A", 3, 0, 6),
+    new Tank("A", 4, 0, 7),
 
-    new Tank("B-tank-1", 7, 0),
-    new Tank("B-tank-2", 7, 1),
-    new Infantry("B-infantry-1", 7, 2),
-    new Infantry("B-infantry-2", 7, 3),
-    new Infantry("B-infantry-3", 7, 4),
-    new Infantry("B-infantry-4", 7, 5),
-    new Tank("B-tank-3", 7, 6),
-    new Tank("B-tank-4", 7, 7),
+    new Tank("B", 1, 7, 0),
+    new Tank("B", 2, 7, 1),
+    new Infantry("B", 1, 7, 2),
+    new Infantry("B", 2, 7, 3),
+    new Infantry("B", 3, 7, 4),
+    new Infantry("B", 4, 7, 5),
+    new Tank("B", 3, 7, 6),
+    new Tank("B", 4, 7, 7),
   ]);
   const [terrain] = useState<string[]>(createTerrainArray(8, 8));
 
