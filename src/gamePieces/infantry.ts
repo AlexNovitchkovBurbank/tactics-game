@@ -9,13 +9,17 @@ class Infantry implements GamePiece {
   row: number;
   col: number;
 
-  constructor(name: string, row: number, col: number) {
-    this.name = "Infantry-" + name;
+  constructor(player: string, division: number, row: number, col: number) {
+    this.name = "I" + "-" + player + division;
     this.power = 1;
     this.numMovement = 1;
     this.movementLeft = 1;
     this.row = row;
     this.col = col;
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   getPosition(): {row: number; col: number} {

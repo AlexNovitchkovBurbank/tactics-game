@@ -3,6 +3,7 @@ export interface GamePiece {
   move(row: number, col: number, featureType: string): void;
   attack(): number;
   getPower(): number;
+  getName(): string;
   getNumMovement(): number;
   getMovementLeft(): number;
 }
