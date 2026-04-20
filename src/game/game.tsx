@@ -166,7 +166,7 @@ const updateGameBoard = (
           " " +
           piece.getNumMovement() +
           " " +
-          piece.getMovementLeft()
+          Math.trunc(piece.getMovementLeft() * 100) / 100
         : "";
 
       let cellColor: string = terrainArray[row * 8 + col];
